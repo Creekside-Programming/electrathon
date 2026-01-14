@@ -1,4 +1,7 @@
 <script lang="ts">
+  export const width: string = "500px";
+  export const height: string = "500px";
+
   import { onMount } from 'svelte';
   import Chart from 'chart.js/auto';
 
@@ -64,4 +67,6 @@
   });
 </script>
 
-<canvas bind:this={canvasEl}></canvas>
+<div style="width: {width}; height: {height};">
+  <canvas bind:this={canvasEl}></canvas>
+</div>

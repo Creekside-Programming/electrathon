@@ -5,5 +5,5 @@
 <main>
   <h1>Electrathon Dashboard</h1>
 
-  <Chart />
+  <Chart width="500px" height="500px" />
 </main>
