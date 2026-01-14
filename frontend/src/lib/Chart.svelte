@@ -6,10 +6,9 @@
   let canvasEl: HTMLCanvasElement;
 
   async function fetchAndUpdate() {
-    const res = await fetch('https://your-api.com/data');
+    const res = await fetch('https://your-api.com/data'); // todo: user should be able to configure API endpoint
     const { valueA, valueB } = await res.json();
     const timestamp = new Date().toLocaleTimeString();
-
 
     if (chart) {
       chart.data.labels?.push(timestamp);
@@ -30,7 +29,7 @@
     chart = new Chart(canvasEl, {
       type: 'line',
       data: {
-        labels: ["t1", "t2", "t3", "t4", "t5"], // ✅ ensures it's never undefined 
+        labels: ["t1", "t2", "t3", "t4", "t5"], 
         datasets: [
           {
             label: 'volts dummy',
@@ -62,7 +61,7 @@
       clearInterval(interval);
       chart?.destroy();
     };
-  })    ;
+  });
 </script>
 
 <canvas bind:this={canvasEl}></canvas>
