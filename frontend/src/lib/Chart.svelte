@@ -1,6 +1,7 @@
 <script lang="ts">
   export const width: string = "500px";
   export const height: string = "500px";
+  export let apiEndpoint: string; // todo: Chart component should probably not handle API requests directly
 
   import { onMount } from 'svelte';
   import Chart from 'chart.js/auto';
@@ -9,7 +10,7 @@
   let canvasEl: HTMLCanvasElement;
 
   async function fetchAndUpdate() {
-    const res = await fetch('https://your-api.com/data'); // todo: user should be able to configure API endpoint
+    const res = await fetch(apiEndpoint);
     const { valueA, valueB } = await res.json();
     const timestamp = new Date().toLocaleTimeString();
 
