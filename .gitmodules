@@ -1,6 +1,0 @@
-[submodule "pico/thirdparty/pico-sdk"]
-	path = pico/thirdparty/pico-sdk
-	url = https://github.com/raspberrypi/pico-sdk
-[submodule "pico/thirdparty/RadioLib"]
-	path = pico/thirdparty/RadioLib
-	url = https://github.com/jgromes/RadioLib
