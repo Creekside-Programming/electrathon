@@ -11,9 +11,11 @@ def send_command(cmd):
     uart.write(cmd + "\r\n")
     time.sleep(0.5)
     if uart.any():
-        response = uart.read().decode('utf-8')
-        print("Response:", response)
-        
+        data = uart.read()
+        if data is not None:
+            response = data.decode("utf-8")
+            print("Response:", response)
+
 def send(address: int, data: str):
     send_command(f"AT+SEND={address},{len(data)},{data}")
         
@@ -34,7 +36,8 @@ send(1, "Hello world!")
 
 while True:
     if uart.any():
-        data = uart.read().decode()
-        print(str(data))
+        data = uart.read()
+        if data is not None:
+            print(str(data.decode("utf-8")))
     
     time.sleep(0.1)
