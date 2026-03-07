@@ -28,5 +28,17 @@ class RYLR896:
         self._send_command(f"AT+PARAMETER={",".join(map(str, self.parameter))}") # formats so [1,2,3] -> "1,2,3"
 
     def send(self, address: int, data: str):
-        self._print(f"Sending to {address}: {data}")
+        self._print(f"Sending to address {address}: {data}")
         self._send_command(f"AT+SEND={address},{len(data)},{data}")
+
+    def read_forever(self) -> None:
+        """This function runs forever and prints any data it receives. This should probably be at the end of the program."""
+        self._print("Set to read forever...")
+        while True:
+            if self.uart.any():
+                data = self.uart.read()
+                if data is not None:
+                    print(str(data.decode("utf-8")))
+
+            time.sleep(0.1)
+
