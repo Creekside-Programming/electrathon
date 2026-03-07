@@ -22,7 +22,7 @@ class ReceivedMessageData:
         self.snr = snr
 
     def __str__(self) -> str:
-        return f"ReceivedMessageData[address={self.address},length={self.length},data={self.data},rssi={self.rssi},snr={self.snr}]"
+        return f"@RMD[a={self.address},l={self.length},d={self.data},r={self.rssi},s={self.snr}]"
 
 class RYLR896:
     def __init__(self, uart_id: int, tx_pin: Pin, rx_pin: Pin):
