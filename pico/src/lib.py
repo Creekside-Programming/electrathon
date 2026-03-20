@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import override
 
+# ---
+# MARK: SystemMessage
+# ---
+
 class SystemMessage(ABC):
     ID_CHAR: str = "@"
     """Character used to identify a message as a system message. Do not change."""
@@ -72,5 +76,3 @@ class ReceivedDataMessage(SystemMessage):
     @override
     def message_data(self) -> str:
         return f"a={self.address},l={self.length},d={self.data},r={self.rssi},s={self.snr}"
-
-print(SystemMessage.ID_CHAR.__doc__)
