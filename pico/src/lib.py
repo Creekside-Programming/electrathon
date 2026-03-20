@@ -28,7 +28,7 @@ class SystemMessage(ABC):
         """When given message_data from this message, handle it and produce a new message instance"""
         ...
 
-# pretend this is a dataclas (can't be bc micropython)
+# pretend this is a dataclass (can't be bc micropython)
 class ReceivedDataMessage(SystemMessage):
     """Formerly known as ReceivedMessageData
     
@@ -82,6 +82,8 @@ class ReceivedDataMessage(SystemMessage):
 # MARK: Packet
 # ---
 class Packet(ABC):
+    """Describes packets to be sent along the RYLR896 from the car to the pits over LoRa"""
+
     @classmethod
     def is_valid_packed_packet(cls, raw: bytes) -> bool:
         if len(raw) < 12:
@@ -103,10 +105,8 @@ class Packet(ABC):
     @classmethod
     @abstractmethod
     def from_packed(cls, raw: bytes) -> "Packet":
-        """NOTE: make sure that packet is valid using is_valid_packed_packet"""
+        """NOTE: make sure that packet is valid using `is_valid_packed_packet`"""
         ...
-
-    """Describes packets to be sent along the RYLR896 from the car to the pits over LoRa"""
 
     HEADER: str = "chs-elec"
     """In case someone is somehow on the same network id as us then this header should be used to 100% ensure that the data we are parsing is actually ours"""
@@ -176,7 +176,8 @@ class WarningPacket(Packet):
     If you want to get the data from this packet:
     ```python
     struct.unpack(BatteryStatusPacket.ENCODE_FORMAT, packet.data())
-    ```"""
+    ```
+    """
 
     @classmethod
     @override
