@@ -19,9 +19,18 @@
   <div class="m-4"> <!-- content -->
     <div role="tablist" class="tabs tabs-lift ml-2">  
       <input type="radio" name="my_tabs_3" class="tab ml-4" aria-label="Battery" checked={true} />
-      <div class="tab-content">
-        <div class="bg-base-100 border border-gray-300 rounded">
-          <Chart width="500px" height="500px" apiEndpoint={apiEndpoint} />
+      <div class="tab-content bg-base-100 border-base-300 rounded">
+        <div class="flex">
+          <div class="p-4">
+            <h2 class="text-xl mb-1">Voltage</h2>
+            <hr class="border-base-300">
+            <Chart width="300px" height="500px" apiEndpoint={apiEndpoint} />
+          </div>
+          <div class="p-4">
+            <h2 class="text-xl mb-1">Amperage</h2>
+            <hr class="border-base-300">
+            <Chart width="300px" height="500px" apiEndpoint={apiEndpoint} />
+          </div>
         </div>
       </div>
 
