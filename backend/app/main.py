@@ -35,9 +35,9 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         message = BatteryMessage(
             type="battery",
-            data=[{"voltage": round(random.uniform(10.0, 14.0), 1), "amperage": round(random.uniform(40.0, 60.0), 1)}]
+            data=[BatteryStatus(voltage=round(random.uniform(10.0, 14.0), 1), amperage=round(random.uniform(40.0, 60.0), 1))]
         )
-        
+
         await websocket.send_json(message.model_dump())
 
         await asyncio.sleep(1) # Simulate delay between updates
