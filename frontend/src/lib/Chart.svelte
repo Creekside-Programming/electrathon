@@ -63,7 +63,7 @@
             data: [],
             borderColor: style.borderColor,
             backgroundColor: style.backgroundColor,
-            tension: 0.3,
+            tension: 0,
             fill: false,
           },
         ],
