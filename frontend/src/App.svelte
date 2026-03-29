@@ -178,6 +178,27 @@
       { label, voltage: first.voltage, amperage: first.amperage },
     ].slice(-40);
   }
+
+  // --- Keyboard Navigation ---
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+
+      const tabs = document.querySelectorAll<HTMLInputElement>("input[name=\"tabs\"]");
+      const checkedIndex = Array.from(tabs).findIndex((t) => t.checked);
+      if (checkedIndex === -1) return;
+      const prevIndex = (checkedIndex - 1 + tabs.length) % tabs.length;
+      tabs[prevIndex].checked = true;
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+
+      const tabs = document.querySelectorAll<HTMLInputElement>("input[name=\"tabs\"]");
+      const checkedIndex = Array.from(tabs).findIndex((t) => t.checked);
+      if (checkedIndex === -1) return;
+      const prevIndex = (checkedIndex + 1) % tabs.length;
+      tabs[prevIndex].checked = true;
+    }
+  });
 </script>
 
 <main>
@@ -255,7 +276,7 @@
   </div>
   <div class="m-4"> <!-- content -->
     <div role="tablist" class="tabs tabs-lift ml-2">  
-      <input type="radio" name="my_tabs_3" class="tab ml-4" aria-label="Battery" checked={true} />
+      <input type="radio" name="tabs" class="tab ml-4" aria-label="Battery" checked={true} />
       <div class="tab-content bg-base-100 border-base-300 rounded">
         <div class="flex">
           <div class="p-4">
@@ -283,10 +304,10 @@
         </div>
       </div>
 
-      <input type="radio" name="my_tabs_3" class="tab" aria-label="TAB 2" />
+      <input type="radio" name="tabs" class="tab" aria-label="TAB 2" />
       <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
 
-      <input type="radio" name="my_tabs_3" class="tab" aria-label="TAB 3" />
+      <input type="radio" name="tabs" class="tab" aria-label="TAB 3" />
       <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 3</div>
     </div>
   </div>
