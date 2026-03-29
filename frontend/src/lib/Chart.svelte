@@ -1,73 +1,99 @@
 <script lang="ts">
-  export const width: string = "500px";
-  export const height: string = "500px";
-  export let apiEndpoint: string; // todo: Chart component should probably not handle API requests directly
+  import { onMount } from "svelte";
+  import ChartJS from "chart.js/auto";
 
-  import { onMount } from 'svelte';
-  import Chart from 'chart.js/auto';
+  export type ChartMetric = "voltage" | "amperage";
 
-  let chart: Chart | null = null;
+  type Props = {
+    width?: string;
+    height?: string;
+    metric: ChartMetric;
+    labels: string[];
+    values: number[];
+  };
+
+  let { width = "500px", height = "500px", metric, labels, values }: Props =
+    $props();
+
   let canvasEl: HTMLCanvasElement;
+  let chart: ChartJS | null = null;
 
-  async function fetchAndUpdate() {
-    const res = await fetch(apiEndpoint);
-    const { valueA, valueB } = await res.json();
-    const timestamp = new Date().toLocaleTimeString();
+  const maxPoints = 40;
 
-    if (chart) {
-      chart.data.labels?.push(timestamp);
-      chart.data.datasets[0].data.push(valueA);
-      chart.data.datasets[1].data.push(valueB);
+  function styleForMetric(m: ChartMetric) {
+    return m === "voltage"
+      ? {
+          label: "Voltage (V)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          backgroundColor: "rgba(75, 192, 192, 0.1)",
+        }
+      : {
+          label: "Amperage (A)",
+          borderColor: "rgba(255, 99, 132, 1)",
+          backgroundColor: "rgba(255, 99, 132, 0.1)",
+        };
+  }
 
-      const maxPoints = 20;
-      if (chart.data.labels!.length > maxPoints) {
-        chart.data.labels!.shift();
-        chart.data.datasets.forEach(ds => ds.data.shift());
-      }
+  function applyData() {
+    if (!chart) return;
 
-      chart.update();
-    }
+    const style = styleForMetric(metric);
+    const lb = labels.slice(-maxPoints);
+    const vals = values.slice(-maxPoints);
+
+    chart.data.labels = lb;
+    const ds = chart.data.datasets[0];
+    ds.data = vals;
+    ds.label = style.label;
+    ds.borderColor = style.borderColor;
+    ds.backgroundColor = style.backgroundColor;
+
+    chart.update("none");
   }
 
   onMount(() => {
-    chart = new Chart(canvasEl, {
-      type: 'line',
+    const style = styleForMetric(metric);
+    chart = new ChartJS(canvasEl, {
+      type: "line",
       data: {
-        labels: ["t1", "t2", "t3", "t4", "t5"], 
+        labels: [],
         datasets: [
           {
-            label: 'volts dummy',
-            data: [12.1, 12.5, 12.4, 12.9, 13.1],
-            borderColor: 'rgba(75, 192, 192, 1)',
-            tension: 0.3
+            label: style.label,
+            data: [],
+            borderColor: style.borderColor,
+            backgroundColor: style.backgroundColor,
+            tension: 0,
+            fill: false,
           },
-          {
-            label: 'amps dummy',
-            data: [1.5, 2.3, 5.0, 12.9, 1.0],
-            borderColor: 'rgba(255, 99, 132, 1)',
-            tension: 0.3
-          }
-        ]
+        ],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         animation: false,
         scales: {
-          y: { beginAtZero: true }
-        }
-      }
+          y: { beginAtZero: true },
+        },
+      },
     });
 
-    fetchAndUpdate();
-    const interval = setInterval(fetchAndUpdate, 5000);
+    applyData();
 
     return () => {
-      clearInterval(interval);
       chart?.destroy();
+      chart = null;
     };
+  });
+
+  $effect(() => {
+    labels;
+    values;
+    metric;
+    applyData();
   });
 </script>
 
-<div style="width: {width}; height: {height};">
+<div style:width style:height class="min-h-[200px]">
   <canvas bind:this={canvasEl}></canvas>
 </div>
