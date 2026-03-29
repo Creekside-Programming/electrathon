@@ -60,6 +60,7 @@
 
     connectionError = null;
     connectionState = "handshake";
+    chartPoints = [];
     closeWebSocket();
 
     const healthUrl = new URL("/are_you_alive", base).href;
@@ -87,7 +88,14 @@
     });
 
     socket.addEventListener("message", (e) => {
-      console.log("Received message:", e.data);
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(String(e.data));
+      } catch {
+        return;
+      }
+      if (!isBatteryMessage(parsed)) return;
+      appendBatterySample(parsed);
     });
 
     socket.addEventListener("error", () => {
@@ -136,16 +144,39 @@
     data: BatteryStatus[];
   };
 
-  function isBatteryMessage(msg: any): msg is BatteryMessage {
-    return (
-      msg?.type === "battery" &&
-      Array.isArray(msg.data) &&
-      msg.data.every(
-        (m: any) =>
-          typeof m.voltage === "number" &&
-          typeof m.amperage === "number"
-      )
+  type ChartPoint = {
+    label: string;
+    voltage: number;
+    amperage: number;
+  };
+
+  let chartPoints = $state<ChartPoint[]>([]);
+
+  let chartLabels = $derived(chartPoints.map((p) => p.label));
+  let voltageValues = $derived(chartPoints.map((p) => p.voltage));
+  let amperageValues = $derived(chartPoints.map((p) => p.amperage));
+
+  function isBatteryMessage(msg: unknown): msg is BatteryMessage {
+    if (msg === null || typeof msg !== "object") return false;
+    const m = msg as Record<string, unknown>;
+    if (m.type !== "battery" || !Array.isArray(m.data)) return false;
+    return m.data.every(
+      (item: unknown) =>
+        item !== null &&
+        typeof item === "object" &&
+        typeof (item as BatteryStatus).voltage === "number" &&
+        typeof (item as BatteryStatus).amperage === "number"
     );
+  }
+
+  function appendBatterySample(msg: BatteryMessage) {
+    const first = msg.data[0];
+    if (!first) return;
+    const label = new Date().toLocaleTimeString();
+    chartPoints = [
+      ...chartPoints,
+      { label, voltage: first.voltage, amperage: first.amperage },
+    ].slice(-40);
   }
 </script>
 
@@ -230,12 +261,24 @@
           <div class="p-4">
             <h2 class="text-xl mb-1">Voltage</h2>
             <hr class="border-base-300">
-            <Chart width="300px" height="500px" />
+            <Chart
+              width="500px"
+              height="300px"
+              metric="voltage"
+              labels={chartLabels}
+              values={voltageValues}
+            />
           </div>
           <div class="p-4">
             <h2 class="text-xl mb-1">Amperage</h2>
             <hr class="border-base-300">
-            <Chart width="300px" height="500px" />
+            <Chart
+              width="500px"
+              height="300px"
+              metric="amperage"
+              labels={chartLabels}
+              values={amperageValues}
+            />
           </div>
         </div>
       </div>
