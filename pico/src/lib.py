@@ -1,21 +1,17 @@
-from abc import ABC, abstractmethod
-from typing import override
 import struct
 
 # ---
 # MARK: SystemMessage
 # ---
 
-class SystemMessage(ABC):
+class SystemMessage:
     ID_CHAR: str = "@"
     """Character used to identify a message as a system message. Do not change."""
 
     @classmethod
-    @abstractmethod
     def message_id(cls) -> str:
         ...
     @property
-    @abstractmethod
     def message_data(self) -> str:
         ...
 
@@ -23,7 +19,6 @@ class SystemMessage(ABC):
         return f"{self.ID_CHAR}{self.message_id()}[{self.message_data}]"
 
     @classmethod
-    @abstractmethod
     def from_message_data(cls, message_data: str) -> "SystemMessage":
         """When given message_data from this message, handle it and produce a new message instance"""
         ...
@@ -35,7 +30,6 @@ class ReceivedDataMessage(SystemMessage):
     Described the format for logging a message received over LoRa"""
 
     @classmethod
-    @override
     def from_message_data(cls, message_data: str) -> "ReceivedDataMessage":
         data = dict(pair.split("=") for pair in message_data.split(","))
 
@@ -69,19 +63,17 @@ class ReceivedDataMessage(SystemMessage):
             print(f"Warning: length of {length} for RDM {data} is not consistent, something has gone terribly wrong.")
 
     @classmethod
-    @override
     def message_id(cls) -> str:
         return "RDM"
 
     @property
-    @override
     def message_data(self) -> str:
         return f"a={self.address},l={self.length},d={self.data},r={self.rssi},s={self.snr}"
 
 # ---
 # MARK: Packet
 # ---
-class Packet(ABC):
+class Packet:
     """Describes packets to be sent along the RYLR896 from the car to the pits over LoRa"""
 
     @classmethod
@@ -103,7 +95,6 @@ class Packet(ABC):
         return True
 
     @classmethod
-    @abstractmethod
     def from_packed(cls, raw: bytes) -> "Packet":
         """NOTE: make sure that packet is valid using `is_valid_packed_packet`"""
         ...
@@ -112,11 +103,9 @@ class Packet(ABC):
     """In case someone is somehow on the same network id as us then this header should be used to 100% ensure that the data we are parsing is actually ours"""
 
     @classmethod
-    @abstractmethod
     def packet_id(cls) -> str:
         ...
  
-    @abstractmethod
     def data(self) -> bytes:
         ...
 
@@ -129,7 +118,6 @@ class BatteryStatusPacket(Packet):
     """Generic battery status update packet. Will be sent approx. every one second"""
 
     @classmethod
-    @override
     def from_packed(cls, raw: bytes) -> "BatteryStatusPacket":
         if not cls.is_valid_packed_packet(raw):
             raise ValueError("Cannot parse packed packet "+str(raw)+", it is invalid")
@@ -139,11 +127,9 @@ class BatteryStatusPacket(Packet):
         return cls(voltages[0], voltages[1], voltages[2])
 
     @classmethod
-    @override
     def packet_id(cls) -> str:
         return "BATT"
 
-    @override
     def data(self) -> bytes:
         return struct.pack(BatteryStatusPacket.ENCODE_FORMAT, self.voltage1, self.voltage2, self.voltage3)
 
@@ -180,7 +166,6 @@ class WarningPacket(Packet):
     """
 
     @classmethod
-    @override
     def from_packed(cls, raw: bytes) -> "WarningPacket":
         if not cls.is_valid_packed_packet(raw):
             raise ValueError("Cannot parse packed packet "+str(raw)+", it is invalid")
@@ -193,11 +178,9 @@ class WarningPacket(Packet):
     """Maximum length of warning message"""
 
     @classmethod
-    @override
     def packet_id(cls) -> str:
         return "WARN"
 
-    @override
     def data(self) -> bytes:
         return self.message.encode('ascii')[:WarningPacket.MAXIMUM_LENGTH].ljust(WarningPacket.MAXIMUM_LENGTH, b'\x00')
 
