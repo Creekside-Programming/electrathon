@@ -11,12 +11,12 @@ class SystemMessage:
     @classmethod
     def message_id(cls) -> str:
         ...
-    @property
+
     def message_data(self) -> str:
         ...
 
     def __str__(self) -> str:
-        return f"{self.ID_CHAR}{self.message_id()}[{self.message_data}]"
+        return f"{self.ID_CHAR}{self.message_id()}[{self.message_data()}]"
 
     @classmethod
     def from_message_data(cls, message_data: str) -> "SystemMessage":
@@ -66,7 +66,6 @@ class ReceivedDataMessage(SystemMessage):
     def message_id(cls) -> str:
         return "RDM"
 
-    @property
     def message_data(self) -> str:
         return f"a={self.address},l={self.length},d={self.data},r={self.rssi},s={self.snr}"
 
@@ -97,6 +96,7 @@ class Packet:
     @classmethod
     def from_packed(cls, raw: bytes) -> "Packet":
         """NOTE: make sure that packet is valid using `is_valid_packed_packet`"""
+        # todo ^: Are we allowed, as an abstract class, to put this in the base method? Then implementation classes can just call super.from_packed(cls) to do this check instead of rewriting it in every impl
         ...
 
     HEADER: str = "chs-elec"
