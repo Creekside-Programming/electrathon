@@ -1,28 +1,6 @@
+from lib import ReceivedDataMessage
 from machine import UART, Pin
 import time
-
-# imagine this as a dataclass
-class ReceivedMessageData:
-    address: int
-    """Transmitter Address ID"""
-    length: int
-    """Data Length"""
-    data: str
-    """Data"""
-    rssi: int
-    """Received Signal Strength Indicator"""
-    snr: int
-    """Signal-to-noise ratio"""
-
-    def __init__(self, address: int, length: int, data: str, rssi: int, snr: int):
-        self.address = address
-        self.length = length
-        self.data = data
-        self.rssi = rssi
-        self.snr = snr
-
-    def __str__(self) -> str:
-        return f"@RMD[a={self.address},l={self.length},d={self.data},r={self.rssi},s={self.snr}]"
 
 class RYLR896:
     def __init__(self, uart_id: int, tx_pin: Pin, rx_pin: Pin):
@@ -142,7 +120,7 @@ class RYLR896:
             except ValueError:
                 continue  # skip malformed lines
 
-            return ReceivedMessageData(address, length, data, rssi, snr)
+            return ReceivedDataMessage(address, length, data, rssi, snr)
 
         return None
 
