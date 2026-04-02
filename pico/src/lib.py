@@ -110,8 +110,8 @@ class Packet:
         ...
 
     def pack(self) -> bytes:
-        header = Packet.HEADER.encode("ascii")[:8].ljust(8, b'\x00')
-        packet_id = self.packet_id().encode("ascii")[:4].ljust(4, b'\x00')
+        header = Packet.HEADER.encode("ascii")
+        packet_id = self.packet_id().encode("ascii")
         return header + packet_id + self.data()
 
 class BatteryStatusPacket(Packet):
