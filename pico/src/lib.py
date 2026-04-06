@@ -131,21 +131,17 @@ class BatteryStatusPacket(Packet):
         return "BATT"
 
     def data(self) -> bytes:
-        return struct.pack(BatteryStatusPacket.ENCODE_FORMAT, self.voltage1, self.voltage2, self.voltage3)
+        return struct.pack(BatteryStatusPacket.ENCODE_FORMAT, self.voltage)
 
-    ENCODE_FORMAT: str = "fff"
+    ENCODE_FORMAT: str = "f"
 
     #! note: this is temp data; actual numbers we get are still TBD
-    voltage1: float
-    voltage2: float
-    voltage3: float
+    voltage: float
 
-    def __init__(self, voltage1: float, voltage2: float, voltage3: float) -> None:
+    def __init__(self, p_voltage: float) -> None:
         super().__init__()
 
-        self.voltage1 = voltage1
-        self.voltage2 = voltage2
-        self.voltage3 = voltage3
+        self.voltage = p_voltage
 
 class WarningPacket(Packet):
     """A warning from the *car* to the backend. Message cannot exceed `WarningPacket.MAXIMUM_LENGTH` characters.
